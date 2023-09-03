@@ -1,3 +1,7 @@
 .vscode/
 signaling
 log/*
+conf/*.crt
+conf/*.pem
+conf/*.csr
+conf/*.key

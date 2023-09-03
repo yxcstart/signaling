@@ -6,14 +6,20 @@ import (
 )
 
 type FrameworkConf struct {
-	LogFilePath   string
-	LogLevel      log.Level
-	MaxSize       int
-	MaxBackups    int
-	MaxAge        int
-	Compress      bool
-	HttpPort      int
-	HttpStaticDir string
+	LogFilePath string
+	LogLevel    log.Level
+	MaxSize     int
+	MaxBackups  int
+	MaxAge      int
+	Compress    bool
+
+	HttpPort         int
+	HttpStaticDir    string
+	HttpStaticPrefix string
+
+	HttpsPort int
+	HttpsCert string
+	HttpsKey  string
 }
 
 var Conf = &FrameworkConf{}
@@ -68,6 +74,26 @@ func LoadConf(confFile string) error {
 	}
 
 	Conf.HttpStaticDir, err = configFile.GetValue("http", "staticDir")
+	if err != nil {
+		return err
+	}
+
+	Conf.HttpStaticPrefix, err = configFile.GetValue("http", "staticPrefix")
+	if err != nil {
+		return err
+	}
+
+	Conf.HttpsPort, err = configFile.Int("https", "port")
+	if err != nil {
+		return err
+	}
+
+	Conf.HttpsCert, err = configFile.GetValue("https", "cert")
+	if err != nil {
+		return err
+	}
+
+	Conf.HttpsKey, err = configFile.GetValue("https", "key")
 	if err != nil {
 		return err
 	}

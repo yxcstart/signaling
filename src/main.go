@@ -39,9 +39,27 @@ func init() {
 	mw := io.MultiWriter(os.Stdout, logFile)
 	log.SetOutput(mw)
 }
+
 func main() {
+	// 静态资源处理 /static
+	framework.RegisterStaticUrl()
+
+	// 启动http server
+	// go startHttps()
+
+	startHttp()
+}
+
+func startHttp() {
 	err := framework.StartHttp()
 	if err != nil {
-		panic(err.Error())
+		panic(err)
+	}
+}
+
+func startHttps() {
+	err := framework.StartHttps()
+	if err != nil {
+		panic(err)
 	}
 }

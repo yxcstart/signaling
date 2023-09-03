@@ -77,7 +77,18 @@ func entry(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func RegisterStaticUrl() {
+	fs := http.FileServer(http.Dir(Conf.HttpStaticDir))
+	http.Handle(Conf.HttpStaticPrefix, http.StripPrefix(Conf.HttpStaticPrefix, fs))
+}
+
 func StartHttp() error {
 	log.Infof("start http...")
 	return http.ListenAndServe(fmt.Sprintf(":%d", Conf.HttpPort), nil)
+}
+
+func StartHttps() error {
+	log.Infof("start https...")
+	return http.ListenAndServeTLS(fmt.Sprintf(":%d", Conf.HttpsPort), "./conf/geekyang.cn_bundle.crt",
+		"./conf/geekyang.cn.key", nil)
 }
