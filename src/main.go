@@ -45,9 +45,9 @@ func main() {
 	framework.RegisterStaticUrl()
 
 	// 启动http server
-	// go startHttps()
+	go startHttp()
 
-	startHttp()
+	startHttps()
 }
 
 func startHttp() {

@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>1v1屏幕共享-推流端</title>
+    <title>奇变偶不变</title>
 
     <style type="text/css">
         body {
@@ -56,9 +56,20 @@
     <button id="pushBtn">开始推流</button>
     <button id="stopPushBtn">停止推流</button>
 
+    <input type="hidden" id="uid" value="{{.uid}}" />
+    <input type="hidden" id="streamName" value="{{.streamName}}" />
+    <input type="hidden" id="audio" value="{{.audio}}" />
+    <input type="hidden" id="video" value="{{.video}}" />
+
     <script src="/static/js/adapter.js"></script>
     <script src="/static/js/jquery-2.1.1.min.js"></script>
     <script src="/static/js/push.js"></script>
+
+    <footer>
+        <p>版权所有 © 2021 geekyang</p>
+        <p>网站备案号：粤ICP备2023104118号-1</p>
+    </footer>
 </body>
+
 
 </html>

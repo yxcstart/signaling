@@ -20,7 +20,8 @@ func writeHtmlErrorResponse(w http.ResponseWriter, status int, errMsg string) {
 	w.Write([]byte(errMsg))
 }
 
-func (*xrtcClientPushAction) Execute(w http.ResponseWriter, r *http.Request) {
+func (*xrtcClientPushAction) Execute(w http.ResponseWriter, cr *framework.ComRequest) {
+	r := cr.R
 	t, err := template.ParseFiles(fmt.Sprintf("%s/template/push.html", framework.Conf.HttpStaticDir))
 	if err != nil {
 		log.Errorf(err.Error())

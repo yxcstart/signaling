@@ -14,7 +14,7 @@ func init() {
 }
 
 type ActionInterface interface {
-	Execute(w http.ResponseWriter, r *http.Request)
+	Execute(w http.ResponseWriter, cr *ComRequest)
 }
 
 type ComRequest struct {
@@ -65,7 +65,10 @@ func entry(w http.ResponseWriter, r *http.Request) {
 			cr.Logger.AddNotice("clientIP", r.RemoteAddr)
 			cr.Logger.AddNotice("realClientIP", getRealClientIP(r))
 			r.ParseForm()
-			action.Execute(w, r)
+			for k, v := range r.Form {
+				cr.Logger.AddNotice(k, v[0])
+			}
+			action.Execute(w, cr)
 			cr.Logger.AddNotice("cost", time.Since(start).String())
 			cr.Logger.Infof("")
 		} else {
@@ -89,6 +92,5 @@ func StartHttp() error {
 
 func StartHttps() error {
 	log.Infof("start https...")
-	return http.ListenAndServeTLS(fmt.Sprintf(":%d", Conf.HttpsPort), "./conf/geekyang.cn_bundle.crt",
-		"./conf/geekyang.cn.key", nil)
+	return http.ListenAndServeTLS(fmt.Sprintf(":%d", Conf.HttpsPort), Conf.HttpsCert, Conf.HttpsKey, nil)
 }
