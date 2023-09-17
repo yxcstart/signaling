@@ -24,9 +24,11 @@ type FrameworkConf struct {
 
 var Conf = &FrameworkConf{}
 
+var configFile *goconfig.ConfigFile
+
 func LoadConf(confFile string) error {
 	var err error
-	configFile, err := goconfig.LoadConfigFile(confFile)
+	configFile, err = goconfig.LoadConfigFile(confFile)
 
 	if err != nil {
 		return err

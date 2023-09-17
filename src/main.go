@@ -19,6 +19,11 @@ func init() {
 		panic(err)
 	}
 	log.Infof("load config success %+v", framework.Conf)
+	err = framework.SetupXprc()
+	if err != nil {
+		log.Errorf("load xrpc error %s", err.Error())
+		panic(err)
+	}
 	logFormatter := new(log.TextFormatter)
 	logFormatter.FullTimestamp = true
 	logFormatter.TimestampFormat = "2006-01-02 15:04:05.000000"

@@ -5,14 +5,26 @@ import (
 	"signaling/src/common"
 	"signaling/src/framework"
 	"strconv"
-
-	log "github.com/sirupsen/logrus"
 )
 
 type pushAction struct{}
 
 func NewPushAction() *pushAction {
 	return &pushAction{}
+}
+
+type xrtcPushReq struct {
+	Cmdno      int    `json:"cmdno"`
+	Uid        uint64 `json:"uid"`
+	StreamName string `json:"stream_name"`
+	Audio      int    `json:"audio"`
+	Video      int    `json:"video"`
+}
+
+type xrtcPushResp struct {
+	ErrNo  int    `json:"err_no"`
+	ErrMsg int    `json:"err_msg"`
+	Offer  string `json:"offer"`
 }
 
 func (*pushAction) Execute(w http.ResponseWriter, cr *framework.ComRequest) {
@@ -25,7 +37,7 @@ func (*pushAction) Execute(w http.ResponseWriter, cr *framework.ComRequest) {
 	uid, err := strconv.ParseUint(strUid, 10, 64)
 	if err != nil || uid <= 0 {
 		cerr := common.New(common.ParamErr, "parse uid err : "+err.Error())
-		common.ErrorResponse(cerr, w, cr)
+		errorResponse(cerr, w, cr)
 		return
 	}
 
@@ -37,7 +49,7 @@ func (*pushAction) Execute(w http.ResponseWriter, cr *framework.ComRequest) {
 
 	if "" == streamName {
 		cerr := common.New(common.ParamErr, "streamName is null")
-		common.ErrorResponse(cerr, w, cr)
+		errorResponse(cerr, w, cr)
 		return
 	}
 
@@ -65,5 +77,20 @@ func (*pushAction) Execute(w http.ResponseWriter, cr *framework.ComRequest) {
 		video = 1
 	}
 
-	log.Infof("push param uid:%d, streamName:%s, video:%d, audio:%d", uid, streamName, video, audio)
+	req := xrtcPushReq{
+		Cmdno:      CMDNO_PUSH,
+		Uid:        uid,
+		StreamName: streamName,
+		Audio:      audio,
+		Video:      video,
+	}
+
+	var resp xrtcPushResp
+
+	err = framework.Call("xrtc", req, resp, cr.LogId)
+	if err != nil {
+		cerr := common.New(common.NetworkErr, "backend process error")
+		errorResponse(cerr, w, cr)
+		return
+	}
 }
