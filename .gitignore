@@ -5,3 +5,4 @@ conf/*.crt
 conf/*.pem
 conf/*.csr
 conf/*.key
+nohup.out
