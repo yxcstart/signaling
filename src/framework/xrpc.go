@@ -78,7 +78,10 @@ func Call(serviceName string, req interface{}, rsp interface{}, logId uint32) er
 		return err
 	}
 
-	log.Infof("xrpc call %s rsp %+v", serviceName, resp)
-
+	err = json.Unmarshal(resp.Body, rsp)
+	if err != nil {
+		return err
+	}
+	log.Infof("xrpc call %s rsp %+v", serviceName, rsp)
 	return nil
 }
