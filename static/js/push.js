@@ -41,8 +41,8 @@ function sendAnswer(answerSdp) {
     $.post("/signaling/sendanswer",
         { "uid": uid, "streamName": streamName, "answer": answerSdp, "type": "push" },
         function (data, textStatus) {
-            console.log("push response: " + JSON.stringify(data));
-            if ("success" == textStatus && 0 == data.errNo) {
+            console.log("send answer response: " + JSON.stringify(data));
+            if ("success" == textStatus && 0 == data.code) {
                 $("#tips3").html("<font color='blue'>answer发送成功!</font>");
             } else {
                 $("#tips3").html("<font color='red'>answer发送失败!</font>");
