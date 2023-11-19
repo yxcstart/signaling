@@ -13,7 +13,7 @@ var offer = "";
 var pc;
 const config = {};
 var localStream;
-
+var lastConnectionState = "";
 
 function startPush() {
     console.log("send push: /signaling/push");
@@ -35,8 +35,39 @@ function startPush() {
     );
 }
 
+function sendAnswer(answerSdp) {
+    console.log("send answer: /signaling/sendanswer");
+
+    $.post("/signaling/sendanswer",
+        { "uid": uid, "streamName": streamName, "answer": answerSdp, "type": "push" },
+        function (data, textStatus) {
+            console.log("push response: " + JSON.stringify(data));
+            if ("success" == textStatus && 0 == data.errNo) {
+                $("#tips3").html("<font color='blue'>answer发送成功!</font>");
+            } else {
+                $("#tips3").html("<font color='red'>answer发送失败!</font>");
+            }
+        },
+        "json"
+    );
+}
+
+
 function pushStream() {
     pc = new RTCPeerConnection(config);
+
+    pc.oniceconnectionstatechange = function (e) {
+        var state = "";
+        if (lastConnectionState != "") {
+            state = lastConnectionState + "->" + pc.iceConnectionState;
+        } else {
+            state = pc.iceConnectionState;
+        }
+
+        $("#tips2").html("连接状态: " + state);
+        lastConnectionState = pc.iceConnectionState;
+    }
+
     pc.setRemoteDescription(offer).then(
         setRemoteDescriptionSuccess,
         setRemoteDescriptionError
@@ -49,7 +80,6 @@ window.addEventListener("message", function (event) {
     }
 
     if (event.data.type) {
-        console.log(event.data.type );
         if (event.data.type == "SS_DIALOG_SUCCESS") {
             console.log("用户同意屏幕共享, streamId: " + event.data.streamId);
             startScreenStreamFrom(event.data.streamId);
@@ -62,7 +92,7 @@ window.addEventListener("message", function (event) {
 function setRemoteDescriptionSuccess() {
     console.log("pc set remote description success");
     console.log("request screen share");
-    window.postMessage({type: "SS_UI_REQUEST", text: "push"}, "*");
+    window.postMessage({ type: "SS_UI_REQUEST", text: "push" }, "*");
 }
 
 function setRemoteDescriptionError(error) {
@@ -73,7 +103,7 @@ function startScreenStreamFrom(streamId) {
     var constrains = {
         audio: false,
         video: {
-            mandatory:{
+            mandatory: {
                 chromeMediaSource: "desktop",
                 chromeMediaSourceId: streamId,
                 maxWidth: window.screen.width,
@@ -90,12 +120,12 @@ function handleSuccess(stream) {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(
         function (audioStream) {
             stream.addTrack(audioStream.getAudioTracks()[0]);
-            localVideo.srcObject=stream;
-            localStream=stream;
+            localVideo.srcObject = stream;
+            localStream = stream;
             pc.addStream(stream);
             pc.createAnswer().then(
                 createSessionDescriptionSuccess,
-                createSessionDescriptionError   
+                createSessionDescriptionError
             );
         }
     ).catch(handleError);
@@ -107,6 +137,20 @@ function handleError(error) {
 
 function createSessionDescriptionSuccess(answer) {
     console.log("answer sdp: \n" + answer.sdp);
+    console.log("pc set local sdp");
+    pc.setLocalDescription(answer).then(
+        setLocalDescriptionSuccess,
+        setLocalDescriptionError
+    );
+    sendAnswer(answer.sdp);
+}
+
+function setLocalDescriptionSuccess() {
+    console.log("set local description success");
+}
+
+function setLocalDescriptionError(error) {
+    console.log("pc set local description error: " + error);
 }
 
 function createSessionDescriptionError(error) {
