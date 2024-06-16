@@ -48,8 +48,8 @@ func (*stopPullAction) Execute(w http.ResponseWriter, cr *framework.ComRequest) 
 		streamName = values[0]
 	}
 
-	if "" == streamName {
-		cerr := common.New(common.ParamErr, "parse uid err : "+err.Error())
+	if streamName == "" {
+		cerr := common.New(common.ParamErr, "stream name can not be empty")
 		errorResponse(cerr, w, cr)
 		return
 	}

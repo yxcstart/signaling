@@ -29,10 +29,6 @@ type xrtcPullResp struct {
 	Offer  string `json:"offer"`
 }
 
-type pullData struct {
-	Type string `json:"type"`
-	Sdp  string `json:"sdp"`
-}
 
 func (*pullAction) Execute(w http.ResponseWriter, cr *framework.ComRequest) {
 	r := cr.R
@@ -54,7 +50,7 @@ func (*pullAction) Execute(w http.ResponseWriter, cr *framework.ComRequest) {
 		streamName = values[0]
 	}
 
-	if "" == streamName {
+	if streamName == "" {
 		cerr := common.New(common.ParamErr, "streamName is null")
 		errorResponse(cerr, w, cr)
 		return
@@ -68,7 +64,7 @@ func (*pullAction) Execute(w http.ResponseWriter, cr *framework.ComRequest) {
 		strAudio = values[0]
 	}
 
-	if "" == strAudio || "0" == strAudio {
+	if strAudio == "" || strAudio == "0" {
 		audio = 0
 	} else {
 		audio = 1
@@ -78,7 +74,7 @@ func (*pullAction) Execute(w http.ResponseWriter, cr *framework.ComRequest) {
 		strVideo = values[0]
 	}
 
-	if "" == strVideo || "0" == strVideo {
+	if strVideo == ""  || strVideo == "0" {
 		video = 0
 	} else {
 		video = 1

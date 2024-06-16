@@ -48,7 +48,7 @@ func (*sendAnswerAction) Execute(w http.ResponseWriter, cr *framework.ComRequest
 		streamName = values[0]
 	}
 
-	if "" == streamName {
+	if streamName == "" {
 		cerr := common.New(common.ParamErr, "streamName is null")
 		errorResponse(cerr, w, cr)
 		return
@@ -60,7 +60,7 @@ func (*sendAnswerAction) Execute(w http.ResponseWriter, cr *framework.ComRequest
 		answer = values[0]
 	}
 
-	if "" == answer {
+	if answer == "" {
 		cerr := common.New(common.ParamErr, "answer is null")
 		errorResponse(cerr, w, cr)
 		return
@@ -72,7 +72,7 @@ func (*sendAnswerAction) Execute(w http.ResponseWriter, cr *framework.ComRequest
 		strType = values[0]
 	}
 
-	if "" == strType {
+	if strType == "" {
 		cerr := common.New(common.ParamErr, "strType is null")
 		errorResponse(cerr, w, cr)
 		return
