@@ -1,3 +1,3 @@
 #!/bin/bash
 
-go build -a -v -o signaling src/*.go
+go build -v -o signaling src/*.go

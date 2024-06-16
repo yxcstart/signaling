@@ -21,12 +21,12 @@ function startPull() {
     console.log("send pull: /signaling/pull");
 
     $.post("/signaling/pull",
-        { "uid": uid, "streamName": streamName, "audio": audio, "video": video },
-        function (data, textStatus) {
-            console.log("pull response: " + JSON.stringify(data))
+        {"uid": uid, "streamName": streamName, "audio": audio, "video": video},
+        function(data, textStatus) {
+            console.log("push response: " + JSON.stringify(data));
             if ("success" == textStatus && 0 == data.code) {
                 $("#tips1").html("<font color='blue'>拉流请求成功!</font>");
-                console.log("offer sdp: \r\n" + data.data.sdp);
+                console.log("offer sdp: \n" + data.data.sdp);
                 offer = data.data;
                 pullStream();
             } else {
@@ -59,8 +59,8 @@ function stopPull() {
     $("#tips3").html("");
 
     $.post("/signaling/stoppull",
-        { "uid": uid, "streamName": streamName },
-        function (data, textStatus) {
+        {"uid": uid, "streamName": streamName},
+        function(data, textStatus) {
             console.log("stop pull response: " + JSON.stringify(data));
             if ("success" == textStatus && 0 == data.code) {
                 $("#tips1").html("<font color='blue'>停止拉流请求成功!</font>");
@@ -70,14 +70,15 @@ function stopPull() {
         },
         "json"
     );
+
 }
 
 function sendAnswer(answerSdp) {
     console.log("send answer: /signaling/sendanswer");
 
     $.post("/signaling/sendanswer",
-        { "uid": uid, "streamName": streamName, "answer": answerSdp, "type": "push" },
-        function (data, textStatus) {
+        {"uid": uid, "streamName": streamName, "answer": answerSdp, "type": "pull"},
+        function(data, textStatus) {
             console.log("send answer response: " + JSON.stringify(data));
             if ("success" == textStatus && 0 == data.code) {
                 $("#tips3").html("<font color='blue'>answer发送成功!</font>");
@@ -89,11 +90,9 @@ function sendAnswer(answerSdp) {
     );
 }
 
-
 function pullStream() {
     pc = new RTCPeerConnection(config);
-
-    pc.oniceconnectionstatechange = function (e) {
+    pc.oniceconnectionstatechange = function(e) {
         var state = "";
         if (lastConnectionState != "") {
             state = lastConnectionState + "->" + pc.iceConnectionState;
@@ -104,13 +103,12 @@ function pullStream() {
         $("#tips2").html("连接状态: " + state);
         lastConnectionState = pc.iceConnectionState;
     }
-
-    pc.onaddstream = function (e) {
-        remoteStream=e.stream;
-        remoteVideo.srcObject=e.stream;
+    
+    pc.onaddstream = function(e) {
+        remoteStream = e.stream;
+        remoteVideo.srcObject = e.stream;
     }
-
-
+    
     console.log("set remote sdp start");
 
     pc.setRemoteDescription(offer).then(
@@ -118,7 +116,6 @@ function pullStream() {
         setRemoteDescriptionError
     );
 }
-
 
 function setRemoteDescriptionSuccess() {
     console.log("pc set remote sdp success");
@@ -135,22 +132,24 @@ function createSessionDescriptionSuccess(answer) {
         setLocalDescriptionSuccess,
         setLocalDescriptionError
     );
+
     sendAnswer(answer.sdp);
 }
 
-function setRemoteDescriptionError(error) {
-    console.log("pc set remote description error: " + error);
+function setLocalDescriptionSuccess() {
+    console.log("set local sdp success");
 }
 
-
-function setLocalDescriptionSuccess() {
-    console.log("set local description success");
+function setRemoteDescriptionError(error) {
+    console.log("pc set remote sdp error: " + error);
 }
 
 function setLocalDescriptionError(error) {
-    console.log("pc set local description error: " + error);
+    console.log("pc set local sdp error: " + error);
 }
 
 function createSessionDescriptionError(error) {
     console.log("pc create answer error: " + error);
 }
+
+
